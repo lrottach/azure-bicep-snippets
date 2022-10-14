@@ -1,0 +1,10 @@
+[
+    [
+        "/subscriptions/e7933ac0-8efa-46fa-9d1e-929ae1dd5e24/resourceGroups/pbag-avd1-cwe-rg/providers/Microsoft.DesktopVirtualization/applicationGroups/pbag-avd1-cwe-w1-hp1-appg1-desktop",
+        "/subscriptions/e7933ac0-8efa-46fa-9d1e-929ae1dd5e24/resourceGroups/pbag-avd1-cwe-rg/providers/Microsoft.DesktopVirtualization/applicationGroups/pbag-avd1-cwe-w1-hp1-appg2-devtools"
+    ],
+    [
+        "/subscriptions/e7933ac0-8efa-46fa-9d1e-929ae1dd5e24/resourceGroups/pbag-avd1-cwe-rg/providers/Microsoft.DesktopVirtualization/applicationGroups/pbag-avd1-cwe-w1-hp2-appg1-desktop",
+        "/subscriptions/e7933ac0-8efa-46fa-9d1e-929ae1dd5e24/resourceGroups/pbag-avd1-cwe-rg/providers/Microsoft.DesktopVirtualization/applicationGroups/pbag-avd1-cwe-w1-hp2-appg2-erp"
+    ]
+]

@@ -5,6 +5,14 @@ targetScope = 'subscription'
 param deploymentLocation string = 'West Europe'
 param deploymentRg string = 'pbag-avd1-cwe-rg'
 
+// Tagging
+param baseTags object = {
+  CreatedBy: 'lrottach@darkcontoso.io'
+  CreatedOn: '13.10.2022'
+  Environment: 'Production'
+  CostBranch: 'CST-INFRA-DesktopVirtualization'
+}
+
 // Variables
 var managementPlaneInformation = [
   {
@@ -18,6 +26,7 @@ var managementPlaneInformation = [
         startVmOnConnect: true
         validationEnvironment: false
         sessionLimit: 15
+        description: 'AVD Infrastructure - Development'
         applicationGroups: [
           {
             name: 'pbag-avd1-cwe-w1-hp1-appg1-desktop'
@@ -38,6 +47,7 @@ var managementPlaneInformation = [
         startVmOnConnect: true
         validationEnvironment: false
         sessionLimit: 35
+        description: 'AVD Infrastructure - Production Switzerland HQ'
         applicationGroups: [
           {
             name: 'pbag-avd1-cwe-w1-hp2-appg1-desktop'
@@ -64,6 +74,7 @@ var managementPlaneInformation = [
         startVmOnConnect: true
         validationEnvironment: false
         sessionLimit: 15
+        description: 'AVD Infrastructure - US Business'
         applicationGroups: [
           {
             name: 'pbag-avd1-cwe-w2-hp1-appg1-sales'
@@ -78,12 +89,13 @@ var managementPlaneInformation = [
         ]
       }
       {
-        name: 'pbag-avd1-cwe-w1-hp2-validation'
+        name: 'pbag-avd1-cwe-w2-hp2-validation'
         type: 'pooled'
         loadBalancer: 'BreadthFirst'
         startVmOnConnect: true
         validationEnvironment: false
         sessionLimit: 35
+        description: 'AVD Infrastructure - US Validation Environment'
         applicationGroups: [
           {
             name: 'pbag-avd1-cwe-w2-hp2-appg1-desktop'
@@ -91,7 +103,7 @@ var managementPlaneInformation = [
             groupType: 'Desktop'
           }
           {
-            name: 'pbag-avd1-cwe-w1-hp2-appg2-finance'
+            name: 'pbag-avd1-cwe-w2-hp2-appg2-finance'
             friendlyName: 'Finance Test'
             groupType: 'RemoteApp'
           }
@@ -114,9 +126,10 @@ module avdMgPlane 'modules/avd-backplane.bicep' = [for ws in managementPlaneInfo
   name: 'deploy-${ws.workspaceName}'
   scope: rgMgPlane
   params: {
-    location: deploymentLocation
+    deploymentLocation: deploymentLocation
     poolData: ws.hostPools
     workspaceFriendlyName: ws.workspaceFriendlyName
     workspaceName: ws.workspaceName
+    baseTagSet: baseTags
   }
 }]
