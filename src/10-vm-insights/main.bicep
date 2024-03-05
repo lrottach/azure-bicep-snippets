@@ -3,7 +3,7 @@
 //  Type:         Main
 //  Author:       Lukas Rottach
 //  Description:  Azure VM deployment including insights
-//  Target:       Resource Group (rg-lzc-mpn2-log1-we)
+//  Target:       Resource Group (rg-lzc-mpn2-wl1-we)
 //
 // ----------------------------------------------------------
 
@@ -66,6 +66,58 @@ resource log 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   }
 }
 
+// Data Collection Rule
+resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
+  name: '${loganalyticsWorkspaceName}-dcr1'
+  location: deploymentLocation
+  properties: {
+    description: 'Data Collection rule for VM Insights'
+    dataSources: {
+      performanceCounters: [
+        {
+          name: 'VMInsightsPerfCounters'
+          streams: [
+            'Microsoft-InsightsMetrics'
+          ]
+          scheduleTransferPeriod: 'PT1M'
+          samplingFrequencyInSeconds: 60
+          counterSpecifiers: [
+            '\\VmInsights\\DetailedMetrics'
+          ]
+        }
+      ]
+    }
+    destinations: {
+      logAnalytics: [
+        {
+          workspaceResourceId: log.id
+          name: 'VMInsightsPerf-Logs-Dest'
+        }
+      ]
+    }
+    dataFlows: [
+      {
+        streams: [
+          'Microsoft-InsightsMetrics'
+        ]
+        destinations: [
+          'VMInsightsPerf-Logs-Dest'
+        ]
+      }
+    ]
+  }
+}
+
+// Data Collection Rule Association
+resource dcra 'Microsoft.Insights/dataCollectionRuleAssociations@2022-06-01' = {
+  name: '${vmName}-dcr-association'
+  properties: {
+    description: 'Association of data collection rule for VM Insights.'
+    dataCollectionRuleId: dcr.id
+  }
+  scope: vm
+}
+
 // Virtual Maschine
 resource vm 'Microsoft.Compute/virtualMachines@2020-12-01' = {
   name: vmName
@@ -104,6 +156,19 @@ resource vm 'Microsoft.Compute/virtualMachines@2020-12-01' = {
         enabled: true
       }
     }
+  }
+}
+
+// Azure Monitor Agent
+resource ama 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' = {
+  parent: vm
+  name: 'AzureMonitorWindowsAgent'
+  location: deploymentLocation
+  properties: {
+    publisher: 'Microsoft.Azure.Monitor'
+    type: 'AzureMonitorWindowsAgent'
+    autoUpgradeMinorVersion: true
+    typeHandlerVersion: '1.0'
   }
 }
 
